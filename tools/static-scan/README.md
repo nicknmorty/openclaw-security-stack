@@ -5,7 +5,7 @@ It consumes a target repo plus optional `threat-model.json` and emits static
 candidate findings for triage.
 
 This is not an autonomous exploit finder and does not verify vulnerabilities.
-It is the deterministic V0 scanner contract that later agent-assisted review
+It is the deterministic scanner contract that later agent-assisted review
 and adversarial triage can build on.
 
 ## Usage
@@ -62,7 +62,7 @@ Each candidate includes:
 Each evidence item includes `path`, `line`, `role`, and `snippet_redacted`.
 Current JSON schema version: `security-stack.findings.v1`.
 
-## V0 Rule Families
+## Rule Families
 
 - unsafe command/tool execution
 - path traversal and broad file access

@@ -27,7 +27,7 @@ Candidate workflow:
 4. Classify as `new`, `persistent`, or `resolved`.
 5. Redact paths/package context before group summaries when needed.
 
-## V0 Questions
+## Questions
 - Is Bumblebee a direct dependency, an optional adapter, or just a pattern to emulate?
 - Which ecosystems matter first: npm, Python, both, or more?
 - How should acknowledged package-exposure findings be suppressed without hiding real regressions?

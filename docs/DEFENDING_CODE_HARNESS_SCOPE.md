@@ -13,7 +13,7 @@ security work as a repeatable loop instead of a one-shot scan:
 threat model -> sandbox -> discover -> verify -> triage -> patch -> rescan
 ```
 
-The C/C++ ASAN harness is not a direct fit for OpenClaw V0, but the workflow
+The C/C++ ASAN harness is not a direct fit for OpenClaw, but the workflow
 contract is a strong fit. OpenClaw's security project needs low-noise,
 local-first findings with clear trust boundaries, repeatable evidence, and no
 automatic remediation. The harness gives us implementation patterns for each
@@ -58,7 +58,7 @@ Outputs:
 - normalized threat rows for scanners
 - open questions requiring operator or subsystem-owner input
 
-V0 should be read-only except for writing the local artifact.
+The scanner should be read-only except for writing the local artifact.
 
 ### 2. Static Agent Vulnerability Scan
 
@@ -130,7 +130,7 @@ Examples:
 - one tool-permission drift bug implies scanning every agent/runtime config
   resolution path
 
-This is a strong V0/V1 fit because it amplifies known-good human findings
+This is a strong fit because it amplifies known-good human findings
 instead of trying to discover everything from scratch.
 
 ### 6. Sandboxed Dynamic Verifier
@@ -146,7 +146,7 @@ Near-term scope:
 - no MCP tools or external write tools
 - allow egress only to model API if an agent is running inside
 
-Potential V1 targets:
+Potential targets:
 - toy vulnerable targets for validating the pipeline
 - isolated OpenClaw parser/formatter modules with fake fixtures
 - plugin sandbox experiments
