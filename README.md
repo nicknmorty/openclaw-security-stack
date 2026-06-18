@@ -101,14 +101,12 @@ git diff --check
 ## Project Map
 
 - [Contributing / PR policy](CONTRIBUTING.md)
-- [Backlog](BACKLOG.md)
 - [Anthropic security adaptation](docs/ANTHROPIC_SECURITY_ADAPTATION.md)
 - [Anthropic security adapter](tools/anthropic-security/README.md)
 - [Defending Code harness scope](docs/DEFENDING_CODE_HARNESS_SCOPE.md)
 - [Security guard scripts](docs/SECURITY_GUARD_SCRIPTS.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security model](docs/SECURITY_MODEL.md)
-- [Premortem](docs/PREMORTEM.md)
 - [OpenClaw hardening vectors](vectors/openclaw-hardening.md)
 - [Security audit cadence](runbooks/security-audit-cadence.md)
 - [Threat model helper](tools/threat-model/README.md)

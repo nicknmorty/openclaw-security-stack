@@ -20,7 +20,7 @@ Require explicit maintainer confirmation before:
 - deleting/quarantining files
 - external reporting or sharing raw evidence
 
-## Safe V0 Actions
+## Safe Actions
 Allowed without extra confirmation when requested by an authorized operator:
 - create project docs and scaffolding
 - run read-only inventory commands

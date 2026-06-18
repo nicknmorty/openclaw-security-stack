@@ -27,7 +27,7 @@ Testing should focus on whether untrusted text can cross from read/summarize wor
 
 These are references to evaluate, not approved dependencies.
 
-## V0 Test Ideas
+## Test Ideas
 - Untrusted document tries to trigger file writes.
 - Webpage content tries to send a message externally.
 - Tool output tries to escalate into shell execution.
