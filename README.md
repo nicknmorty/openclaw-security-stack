@@ -67,6 +67,9 @@ OpenClaw-specific constraints:
 - `scripts/security-secret-guard.sh`, `scripts/oauth-containment-audit.sh`, and
   `scripts/redact-sensitive-output.sh` - sanitized local guard helpers for
   secret-boundary checks, OAuth/token containment, and redacted diagnostics.
+  See [Security guard scripts](docs/SECURITY_GUARD_SCRIPTS.md) for the exact
+  files they can create, delete, strip, or chmod and why those actions reduce
+  credential exposure.
 
 ## Usage
 

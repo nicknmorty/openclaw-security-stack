@@ -15,7 +15,8 @@ Environment:
   SECURITY_SECRET_GUARD_DEEP         Set to 1 to run optional trufflehog scan.
   TRUFFLEHOG_BIN                     trufflehog binary path. Default: first trufflehog in PATH
 
-Default mode is read-only. Pass --remediate to delete or strip known unsupported
+Default mode does not modify auth/config state. It writes a local report under
+the report directory. Pass --remediate to delete or strip known unsupported
 plaintext auth stores; review the summary before using remediation on real state.
 EOF
 }
@@ -216,7 +217,7 @@ elif [ "$deep" = "1" ]; then
   append_finding "missing-tool" "trufflehog" "true" "TRUFFLEHOG_BIN"
 fi
 
-find "$workspace/tmp/security" "$scan_root" -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.log' \) -delete 2>/dev/null || true
+find "$run_dir" -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.log' \) -delete 2>/dev/null || true
 
 findings="$(awk -F '\t' 'NR>1 && $1 != "ok" {n++} END {print n+0}' "$summary")"
 printf 'findings\t%s\n' "$findings" >> "$summary"
