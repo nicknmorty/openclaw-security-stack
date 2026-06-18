@@ -1,0 +1,102 @@
+{
+  "schema_version": "openclaw-security-stack.anthropic-adapter.v1",
+  "purpose": "Adapt Anthropic security skills and reference harness for OpenClaw without reimplementing the workflow from scratch.",
+  "upstreams": [
+    {
+      "name": "anthropics/defending-code-reference-harness",
+      "url": "https://github.com/anthropics/defending-code-reference-harness",
+      "commit": "9e0f6c6cd54fc3b8ce79708e8208d862634a2624",
+      "imported_paths": [
+        ".claude/skills/",
+        "docs/security.md",
+        "docs/agent-sandbox.md",
+        "docs/pipeline.md",
+        "docs/patching.md",
+        "docs/customizing.md"
+      ]
+    },
+    {
+      "name": "anthropics/claude-code-security-review",
+      "url": "https://github.com/anthropics/claude-code-security-review",
+      "commit": "0c6a49f1fa56a1d472575da86a94dbc1edb78eda",
+      "imported_paths": [
+        ".claude/commands/security-review.md"
+      ]
+    }
+  ],
+  "skill_map": [
+    {
+      "anthropic_skill": "quickstart",
+      "openclaw_lane": "security workflow quickstart",
+      "source_path": "tools/anthropic-security/upstream/defending-code/.claude/skills/quickstart/SKILL.md",
+      "openclaw_skill_path": "tools/anthropic-security/openclaw-skills/anthropic-quickstart/SKILL.md",
+      "expected_outputs": ["workflow plan"],
+      "local_execution": "read_only_guidance"
+    },
+    {
+      "anthropic_skill": "threat-model",
+      "openclaw_lane": "threat model",
+      "source_path": "tools/anthropic-security/upstream/defending-code/.claude/skills/threat-model/SKILL.md",
+      "openclaw_skill_path": "tools/anthropic-security/openclaw-skills/anthropic-threat-model/SKILL.md",
+      "expected_outputs": ["THREAT_MODEL.md"],
+      "local_execution": "static_read_write_only"
+    },
+    {
+      "anthropic_skill": "vuln-scan",
+      "openclaw_lane": "static scan",
+      "source_path": "tools/anthropic-security/upstream/defending-code/.claude/skills/vuln-scan/SKILL.md",
+      "openclaw_skill_path": "tools/anthropic-security/openclaw-skills/anthropic-vuln-scan/SKILL.md",
+      "expected_outputs": ["VULN-FINDINGS.json", "VULN-FINDINGS.md"],
+      "local_execution": "static_read_write_only"
+    },
+    {
+      "anthropic_skill": "triage",
+      "openclaw_lane": "adversarial triage",
+      "source_path": "tools/anthropic-security/upstream/defending-code/.claude/skills/triage/SKILL.md",
+      "openclaw_skill_path": "tools/anthropic-security/openclaw-skills/anthropic-triage/SKILL.md",
+      "expected_outputs": ["TRIAGE.json", "TRIAGE.md"],
+      "local_execution": "static_read_write_only"
+    },
+    {
+      "anthropic_skill": "patch",
+      "openclaw_lane": "patch draft",
+      "source_path": "tools/anthropic-security/upstream/defending-code/.claude/skills/patch/SKILL.md",
+      "openclaw_skill_path": "tools/anthropic-security/openclaw-skills/anthropic-patch/SKILL.md",
+      "expected_outputs": ["PATCHES/", "PATCHES.json", "PATCHES.md"],
+      "local_execution": "inert_patch_generation_only"
+    },
+    {
+      "anthropic_skill": "customize",
+      "openclaw_lane": "pipeline customization",
+      "source_path": "tools/anthropic-security/upstream/defending-code/.claude/skills/customize/SKILL.md",
+      "openclaw_skill_path": "tools/anthropic-security/openclaw-skills/anthropic-customize/SKILL.md",
+      "expected_outputs": ["target-specific harness changes"],
+      "local_execution": "requires_plan_and_review"
+    },
+    {
+      "anthropic_command": "security-review",
+      "openclaw_lane": "diff-aware PR security review",
+      "source_path": "tools/anthropic-security/upstream/claude-code-security-review/.claude/commands/security-review.md",
+      "openclaw_skill_path": "tools/anthropic-security/openclaw-skills/anthropic-security-review/SKILL.md",
+      "expected_outputs": ["markdown security review"],
+      "local_execution": "read_only_diff_review"
+    }
+  ],
+  "openclaw_wrapper_sync": {
+    "source_dir": "tools/anthropic-security/openclaw-skills",
+    "script": "scripts/sync-openclaw-security-skills.mjs",
+    "default_behavior": "copy wrappers to an explicit --install-dir only; does not modify live OpenClaw skills unless the operator points it there"
+  },
+  "openclaw_constraints": {
+    "static_skills": "May read target source and write local report artifacts only.",
+    "patching": "Must write inert diffs only; no apply flag or target source edits.",
+    "dynamic_pipeline": "Must not run on the Pi by default. Use approved off-Pi/container sandbox only.",
+    "secrets": "Never mount private agent homes, .env files, auth stores, SSH keys, or memory files into scanner or agent sandboxes.",
+    "external_actions": "No messaging, GitHub write APIs, Gateway controls, MCP write tools, or cloud storage access inside scanner agents.",
+    "reporting": "Local JSON/Markdown may contain private evidence. Chat summaries must be redacted."
+  },
+  "supersedes": {
+    "closed_prs": [3, 4, 5, 6, 7],
+    "reason": "Scratch-built tools were closed after confirming Anthropic upstream should be adapted instead of reimplemented."
+  }
+}
