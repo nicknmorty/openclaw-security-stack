@@ -64,6 +64,9 @@ OpenClaw-specific constraints:
 - `scripts/security-threat-model.mjs` and `scripts/security-static-scan.mjs` -
   local static helper CLIs from the earlier bootstrap phase. Keep them as
   support/reference until replaced or wrapped by the Anthropic-aligned skills.
+- `scripts/security-secret-guard.sh`, `scripts/oauth-containment-audit.sh`, and
+  `scripts/redact-sensitive-output.sh` - sanitized local guard helpers for
+  secret-boundary checks, OAuth/token containment, and redacted diagnostics.
 
 ## Usage
 
@@ -86,6 +89,7 @@ Run the repo checks:
 
 ```bash
 node scripts/test-anthropic-security-adapter.mjs
+node scripts/test-security-guard-scripts.mjs
 node scripts/test-security-threat-model.mjs
 node scripts/test-security-static-scan.mjs
 git diff --check
@@ -98,6 +102,7 @@ git diff --check
 - [Anthropic security adaptation](docs/ANTHROPIC_SECURITY_ADAPTATION.md)
 - [Anthropic security adapter](tools/anthropic-security/README.md)
 - [Defending Code harness scope](docs/DEFENDING_CODE_HARNESS_SCOPE.md)
+- [Security guard scripts](docs/SECURITY_GUARD_SCRIPTS.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security model](docs/SECURITY_MODEL.md)
 - [Premortem](docs/PREMORTEM.md)
