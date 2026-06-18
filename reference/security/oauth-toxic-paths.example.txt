@@ -1,0 +1,19 @@
+# OAuth/token containment toxic paths
+#
+# These paths may contain OAuth refresh/access material or token-bearing auth
+# state. Scanners, shell snapshotters, log collectors, report generators, and
+# backup viewers should treat them as deny/exclude paths unless they are running
+# a purpose-built, permission-locked auth backup.
+
+~/.openclaw/agents/*/agent/auth-profiles.json
+~/.openclaw/agents/*/agent/auth-state.json
+~/.config/openclaw/auth-profile-secret-key
+~/.config/gh/hosts.yml
+~/.codex/auth.json
+~/.codex/auth*
+~/.config/*/tokens
+~/.config/*/tokens.*
+~/.config/*/*token*
+~/.config/*/*auth*
+~/.local/share/openclaw/oauth
+~/.openclaw/backups/restart-safety

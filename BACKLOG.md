@@ -10,6 +10,7 @@
 - Draft report schema for `new`, `persistent`, and `resolved` findings.
 - Create local state format for previous scan comparison.
 - Add redaction helper for secrets, home paths, tokens, phone numbers, and private chat IDs.
+- Expand sanitized guard-script fixtures for more auth/config shapes.
 - Add sample report fixture using fake findings.
 - Generate Anthropic-style threat-model artifacts for the first target repos.
 - Add scanner report state diffing for `new`, `persistent`, and `resolved`.
