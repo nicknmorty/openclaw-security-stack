@@ -12,6 +12,9 @@ Working public v1 of the local-first scanner stack.
 
 ### Added
 
+- Root MIT license for original project code.
+- Third-party notices for vendored/adapted Anthropic MIT and Apache-2.0
+  upstream material.
 - One-command scan orchestrator: `node scripts/security-scan.mjs`.
 - Four read-only lanes behind the orchestrator:
   - `threat-model`

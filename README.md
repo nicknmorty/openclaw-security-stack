@@ -140,6 +140,8 @@ git diff --check
 
 ## Project Map
 
+- [License](LICENSE)
+- [Third-party notices](THIRD_PARTY_NOTICES.md)
 - [Contributing / PR policy](CONTRIBUTING.md)
 - [Changelog](CHANGELOG.md)
 - [Anthropic security adaptation](docs/ANTHROPIC_SECURITY_ADAPTATION.md)
