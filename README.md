@@ -1,6 +1,6 @@
 # OpenClaw Security Stack
 
-Status: public preview, Anthropic security adapter merged
+Status: public working v1, Anthropic security adapter merged
 Started: 2026-05-26
 Owner: OpenClaw security maintainers
 Collaborators: public contributors
@@ -16,6 +16,44 @@ The current direction is to adapt Anthropic's published security skills and
 reference harness into native OpenClaw skills. We are not reinventing those
 workflows from scratch.
 
+## Quick Start
+
+One command runs every scanner against a target and writes a consolidated,
+redacted, local-only report and chat-ready digest:
+
+```bash
+# ad-hoc single target
+node scripts/security-scan.mjs --target /path/to/repo --label my-repo
+
+# or configure targets once
+cp security-scan.config.example.json security-scan.config.json   # edit targets
+node scripts/security-scan.mjs
+
+# optional: acknowledge accepted findings so the digest stays low-noise
+cp security-suppressions.example.json security-suppressions.json
+node scripts/security-scan.mjs --suppressions security-suppressions.json
+```
+
+The orchestrator runs `threat-model -> static-scan -> supply-chain ->
+runtime-health`, turns each findings stream into a redacted report with `new` /
+`persistent` / `resolved` state, and writes `runs/summary/SUMMARY.md` +
+`SUMMARY.json` plus `runs/summary/DIGEST.txt`. All output is local-only and
+redacted by default. Lanes are portable/generic and avoid hardcoded host
+identity.
+
+Start with the operator runbook for real use:
+
+- [Security stack v1 operator runbook](runbooks/v1-operator-runbook.md)
+- [v1 acceptance checklist](docs/V1_ACCEPTANCE.md)
+
+Run tests with:
+
+```bash
+for f in scripts/test-*.mjs; do node "$f"; done
+bash -n scripts/security-secret-guard.sh scripts/oauth-containment-audit.sh scripts/redact-sensitive-output.sh
+git diff --check
+```
+
 ## Current State
 
 Merged PR #8 replaced the scratch-built tool line with an Anthropic-aligned
@@ -29,7 +67,7 @@ adapter:
   coverage, and install-layout behavior.
 
 The skills are not installed live yet. They are staged in this repo for review
-and controlled rollout.
+and controlled rollout. The v1 scanner CLIs are usable directly from this repo.
 
 ## Security Workflow
 
@@ -62,8 +100,12 @@ OpenClaw-specific constraints:
 - `scripts/test-anthropic-security-adapter.mjs` - verifies adapter integrity,
   wrapper safety contracts, license presence, and sync behavior.
 - `scripts/security-threat-model.mjs` and `scripts/security-static-scan.mjs` -
-  local static helper CLIs from the earlier bootstrap phase. Keep them as
-  support/reference until replaced or wrapped by the Anthropic-aligned skills.
+  local static helper CLIs.
+- `scripts/security-supply-chain.mjs`, `scripts/security-runtime-health.mjs`,
+  and `scripts/security-scan.mjs` - supply-chain posture, portable runtime
+  health, and the v1 orchestrator.
+- `scripts/security-report.mjs` and `scripts/security-digest.mjs` - redacted
+  stateful reports and low-noise digest rendering.
 - `scripts/security-secret-guard.sh`, `scripts/oauth-containment-audit.sh`, and
   `scripts/redact-sensitive-output.sh` - sanitized local guard helpers for
   secret-boundary checks, OAuth/token containment, and redacted diagnostics.
@@ -91,10 +133,8 @@ node scripts/sync-openclaw-security-skills.mjs \
 Run the repo checks:
 
 ```bash
-node scripts/test-anthropic-security-adapter.mjs
-node scripts/test-security-guard-scripts.mjs
-node scripts/test-security-threat-model.mjs
-node scripts/test-security-static-scan.mjs
+for f in scripts/test-*.mjs; do node "$f"; done
+bash -n scripts/security-secret-guard.sh scripts/oauth-containment-audit.sh scripts/redact-sensitive-output.sh
 git diff --check
 ```
 
@@ -107,10 +147,17 @@ git diff --check
 - [Security guard scripts](docs/SECURITY_GUARD_SCRIPTS.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Security model](docs/SECURITY_MODEL.md)
+- [Security stack v1 operator runbook](runbooks/v1-operator-runbook.md)
+- [v1 acceptance checklist](docs/V1_ACCEPTANCE.md)
 - [OpenClaw hardening vectors](vectors/openclaw-hardening.md)
 - [Security audit cadence](runbooks/security-audit-cadence.md)
 - [Threat model helper](tools/threat-model/README.md)
 - [Static scan helper](tools/static-scan/README.md)
+- [Supply-chain helper](tools/supply-chain/README.md)
+- [Runtime-health helper](tools/runtime-health/README.md)
+- [Report helper](tools/report/README.md)
+- [Digest helper](tools/digest/README.md)
+- [Suppressions helper](tools/suppressions/README.md)
 
 ## Directory Map
 
@@ -127,9 +174,8 @@ git diff --check
 
 1. Decide the live OpenClaw skills distribution path for these wrappers.
 2. Install/sync the wrappers only after explicit review and approval.
-3. Dogfood `anthropic-quickstart`, `anthropic-threat-model`, and
+3. Add optional CVE/advisory intelligence for supply-chain findings.
+4. Dogfood `anthropic-quickstart`, `anthropic-threat-model`, and
    `anthropic-vuln-scan` on selected OpenClaw repos.
-4. Decide whether the local bootstrap CLIs become support commands, fixtures,
+5. Decide whether the local bootstrap CLIs become support commands, fixtures,
    or are retired in favor of the skill workflows.
-5. Add redacted report state/diffing for `new`, `persistent`, and `resolved`
-   findings.

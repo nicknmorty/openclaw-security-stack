@@ -1,0 +1,10 @@
+{
+  "_comment": "Copy to identity-denylist.json (gitignored) and fill in site-specific identity terms. The redaction module loads the real file via --identity-file or $SECURITY_STACK_IDENTITY_FILE. Do NOT commit the filled-in version. Generic patterns (home paths, secrets, phones, chat ids) are already built in; this file is only for literal names/usernames/exact ids that generic rules cannot infer.",
+  "terms": [
+    "Example Person",
+    "example_username"
+  ],
+  "patterns": [
+    "\\bexample-secret-codename\\b"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "_comment": "Copy to security-scan.config.json (gitignored) and set real target paths. Run: node scripts/security-scan.mjs",
+  "redact": true,
+  "outRoot": "runs",
+  "identityFile": "reference/security/identity-denylist.json",
+  "targets": [
+    {
+      "label": "openclaw-security-stack",
+      "path": ".",
+      "scanners": ["threat-model", "static-scan", "supply-chain", "runtime-health"]
+    }
+  ]
+}

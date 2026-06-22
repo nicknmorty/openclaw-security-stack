@@ -1,0 +1,5 @@
+# sample requirements for supply-chain fixture
+requests==2.31.0
+flask>=2.0
+numpy
+-r other.txt

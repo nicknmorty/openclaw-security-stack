@@ -49,8 +49,52 @@ const SCANNED_EXTENSIONS = new Set([
   ".tf",
 ]);
 
-const SOURCE_HINT =
-  /\b(req|request|params|query|body|message|payload|input|argv|args|stdin|env|headers|chat|sender|webhook|callback|user)\b/i;
+// Tiered taint hints. STRONG tokens strongly indicate externally controllable
+// input (HTTP/agent message surfaces). WEAK tokens (CLI args, env, locals named
+// user/input) are common in benign plumbing, so weak-only matches are kept but
+// downgraded rather than reported at full severity. This is the core of the
+// severity/confidence tuning: reduce false positives without hiding candidates.
+const STRONG_SOURCE_HINT =
+  /\b(req|request|params|query|body|message|payload|stdin|headers|webhook|callback|inbound|untrusted)\b/i;
+const WEAK_SOURCE_HINT =
+  /\b(argv|args|env|input|user|sender|chat)\b/i;
+
+// Combined gate (kept for any taint presence check).
+const SOURCE_HINT = new RegExp(`${STRONG_SOURCE_HINT.source}|${WEAK_SOURCE_HINT.source}`, 'i');
+
+const WEAK_TAINT_CONFIDENCE_PENALTY = 0.25;
+
+// Remove benign idioms that otherwise trip taint tokens — most notably the
+// `err.message` / `error.stack` exception-property pattern, which is extremely
+// common and is NOT external input. Real agent sources (update.message.text,
+// ctx.message, req.body) are preserved.
+export function denoiseContext(context) {
+  return String(context ?? '').replace(/\b(?:err|error|e|ex|exc|exception)\.(message|stack)\b/gi, '');
+}
+
+// Returns 'strong' | 'weak' | null for a context window.
+export function taintStrength(context) {
+  const ctx = denoiseContext(context);
+  if (STRONG_SOURCE_HINT.test(ctx)) return 'strong';
+  if (WEAK_SOURCE_HINT.test(ctx)) return 'weak';
+  return null;
+}
+
+export function downgradeSeverity(severity) {
+  return { HIGH: 'MEDIUM', MEDIUM: 'LOW', LOW: 'LOW' }[severity] ?? severity;
+}
+
+// Pure scorer: weak taint downgrades severity one notch and reduces confidence.
+// Non-taint rules and strong taint keep the rule's base severity/confidence.
+export function scoreCandidate(rule, strength) {
+  let severity = rule.severity;
+  let confidence = rule.confidence;
+  if (rule.needsTaint && strength === 'weak') {
+    severity = downgradeSeverity(severity);
+    confidence = Math.max(0.05, Math.round((confidence - WEAK_TAINT_CONFIDENCE_PENALTY) * 100) / 100);
+  }
+  return { severity, confidence, taint_strength: rule.needsTaint ? (strength || 'n/a') : 'n/a' };
+}
 
 const RULES = [
   {
@@ -411,11 +455,15 @@ function scanFile(file, text, threatModel) {
     for (const rule of RULES) {
       rule.sink.lastIndex = 0;
       if (!rule.sink.test(line)) continue;
-      if (rule.needsTaint && !SOURCE_HINT.test(context)) continue;
+      let strength = 'n/a';
+      if (rule.needsTaint) {
+        strength = taintStrength(context);
+        if (!strength) continue;
+      }
       if (rule.needsSecret && !secretHint(context)) continue;
       if (rule.needsMissingAuth && hasAuthHint(contextAround(lines, index, 12))) continue;
 
-      findings.push(makeFinding(rule, file, index + 1, line, context, threatModel));
+      findings.push(makeFinding(rule, file, index + 1, line, context, threatModel, strength));
     }
   }
   return findings;
@@ -443,15 +491,17 @@ function hasAuthHint(text) {
   return /\b(auth|authorize|authenticated|requireUser|requireAdmin|ownerAllowFrom|verify|token|permission|canAccess|isAdmin)\b/i.test(text);
 }
 
-function makeFinding(rule, file, lineNumber, line, context, threatModel) {
+function makeFinding(rule, file, lineNumber, line, context, threatModel, strength = 'n/a') {
   const threatIds = matchThreatIds(rule, threatModel);
+  const scored = scoreCandidate(rule, strength);
   return {
     id: "pending",
     lane: rule.lane,
     category: rule.category,
     title: rule.title,
-    severity: rule.severity,
-    confidence: rule.confidence,
+    severity: scored.severity,
+    confidence: scored.confidence,
+    taint_strength: scored.taint_strength,
     status: "new",
     verdict: "candidate",
     redaction_level: secretHint(context) ? "local" : "shareable-redacted",
@@ -689,4 +739,5 @@ function main() {
   }
 }
 
-main();
+const isMain = import.meta.url === `file://${process.argv[1]}`;
+if (isMain) main();

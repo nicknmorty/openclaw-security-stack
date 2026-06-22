@@ -1,5 +1,8 @@
 runs/
 state/
+security-scan.config.json
+security-suppressions.json
+reference/security/identity-denylist.json
 node_modules/
 .env
 .env.*

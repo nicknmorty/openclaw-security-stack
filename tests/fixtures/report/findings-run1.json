@@ -1,0 +1,41 @@
+{
+  "schema_version": "security-stack.findings.v1",
+  "tool": "security-static-scan",
+  "summary": {
+    "scanner": "security-static-scan",
+    "mode": "static-readonly",
+    "name": "Sample Target",
+    "target_label": "Sample Target",
+    "target_basename": "sample-target",
+    "target_commit": "deadbeef0001",
+    "local_private": {
+      "local_target_path": "/home/example-user/projects/sample-target"
+    },
+    "finding_count": 2
+  },
+  "findings": [
+    {
+      "id": "F-001",
+      "lane": "runtime-health",
+      "category": "path-traversal",
+      "title": "User-controlled value appears in filesystem path operation",
+      "severity": "MEDIUM",
+      "confidence": 0.68,
+      "file": "src/server.js",
+      "line": 42,
+      "evidence": "path read at /home/example-user/projects/sample-target/src/server.js",
+      "reporter_contact": "call +1 (555) 010-0123 for context",
+      "access_token": "example-secret-token"
+    },
+    {
+      "id": "F-002",
+      "lane": "agent-safety",
+      "category": "prompt-injection",
+      "title": "Untrusted content reaches tool dispatch",
+      "severity": "HIGH",
+      "confidence": 0.81,
+      "file": "src/agent.js",
+      "line": 9
+    }
+  ]
+}

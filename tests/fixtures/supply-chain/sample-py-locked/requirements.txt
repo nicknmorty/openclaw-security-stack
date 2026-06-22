@@ -1,0 +1,3 @@
+# fully pinned, should produce no unpinned finding
+requests==2.31.0
+flask==2.3.3

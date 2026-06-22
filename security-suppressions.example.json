@@ -1,0 +1,19 @@
+{
+  "_comment": "Copy to security-suppressions.json (gitignored) to acknowledge accepted findings so reports surface true signal. View-layer only: removing an entry resurfaces the finding. Match by exact `fingerprint` (from a report) OR a `match` rule (any subset of lane/category/file/severity/title). Optional `expires` (ISO date) auto-deactivates.",
+  "schema_version": "security-stack.suppressions.v1",
+  "suppressions": [
+    {
+      "id": "example-lan-services",
+      "match": { "lane": "runtime-health", "category": "listening-non-loopback" },
+      "reason": "Home/LAN services are expected to bind to all interfaces",
+      "by": "operator"
+    },
+    {
+      "id": "example-single-finding",
+      "fingerprint": "f-example-fingerprint",
+      "reason": "Reviewed and accepted on 2026-01-01",
+      "by": "operator",
+      "expires": "2026-12-31"
+    }
+  ]
+}
