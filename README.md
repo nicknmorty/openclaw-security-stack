@@ -141,6 +141,7 @@ git diff --check
 ## Project Map
 
 - [Contributing / PR policy](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md)
 - [Anthropic security adaptation](docs/ANTHROPIC_SECURITY_ADAPTATION.md)
 - [Anthropic security adapter](tools/anthropic-security/README.md)
 - [Defending Code harness scope](docs/DEFENDING_CODE_HARNESS_SCOPE.md)
