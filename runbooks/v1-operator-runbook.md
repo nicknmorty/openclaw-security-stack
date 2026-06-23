@@ -10,7 +10,8 @@ new findings, acknowledge accepted noise, and share only the low-noise redacted
 digest when appropriate.
 
 The v1 scanner is read-only. It does not patch files, change host policy, edit
-cron, restart services, or call external advisory APIs.
+cron, restart services, or call external advisory APIs. Its findings are review
+candidates, not verified vulnerabilities.
 
 ## What It Runs
 
@@ -28,6 +29,10 @@ By default it runs these lanes:
 - `runtime-health`: local host posture checks such as listening sockets, SSH
   config, SSH key permissions, opt-in sensitive file permissions, and firewall
   presence.
+
+`runtime-health` is host posture, not target-repo code analysis. It runs by
+default in v1 to give runtime-adjacent context, so omit it explicitly for
+repo-only scans.
 
 ## First-Time Setup
 
@@ -75,6 +80,15 @@ node scripts/security-scan.mjs \
   --target /path/to/repo \
   --label my-repo \
   --scanners static-scan,supply-chain
+```
+
+Run repo-only lanes without host posture:
+
+```bash
+node scripts/security-scan.mjs \
+  --target /path/to/repo \
+  --label my-repo \
+  --scanners threat-model,static-scan,supply-chain
 ```
 
 ## Read The Output
@@ -163,5 +177,9 @@ Expected v1 behavior:
 - Supply-chain checks are deterministic posture checks, not CVE/advisory intel.
 - Static findings are candidates, not proof of exploitability.
 - Runtime-health is best-effort and skips unavailable host tools gracefully.
+- Runtime-health is host posture and should be interpreted separately from
+  target-repo findings.
+- Anthropic-inspired workflow wrappers are staged, but this release is not a
+  full implementation of Anthropic's autonomous reference harness.
 - No automated remediation.
 - No cron wiring in this repo; scheduling is an operator integration concern.

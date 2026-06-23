@@ -122,7 +122,7 @@ for (const name of wrapperNames) {
     path.join(repoRoot, `tools/anthropic-security/openclaw-skills/${name}/SKILL.md`),
     "utf8",
   );
-  assert.match(wrapper, /OpenClaw Native Skill/);
+  assert.match(wrapper, /OpenClaw Skill Wrapper/);
   assert.doesNotMatch(
     wrapper,
     /\.\.\/\.\.\/upstream/,

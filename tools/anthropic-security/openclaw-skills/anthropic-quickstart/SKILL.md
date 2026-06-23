@@ -3,7 +3,7 @@ name: anthropic-quickstart
 description: Orient users to the OpenClaw-adapted Anthropic security workflow.
 ---
 
-# Anthropic Quickstart - OpenClaw Native Skill
+# Anthropic Quickstart - OpenClaw Skill Wrapper
 
 This skill adapts Anthropic's defending-code `quickstart` flow for OpenClaw.
 It is self-contained for runtime use.

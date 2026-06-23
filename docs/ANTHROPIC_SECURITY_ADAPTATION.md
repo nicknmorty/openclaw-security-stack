@@ -5,9 +5,11 @@ Date: 2026-06-05
 
 ## Correction
 
-This project should adapt Anthropic's security skill and reference-harness
-workflow for OpenClaw compatibility. It should not reimplement the same
-workflow from scratch.
+This project should adapt Anthropic's security skill workflow for OpenClaw
+compatibility while staying honest about scope. The current v1 is
+Anthropic-inspired workflow wrappers plus local OpenClaw scanner/reporting
+tooling; it is not a full implementation of Anthropic's autonomous
+Python/Docker/gVisor reference harness.
 
 The prior scratch-built PRs for triage, variant finding, patch drafting, and
 dynamic verification were closed as superseded. Their shape may still be useful
@@ -36,7 +38,7 @@ The installable OpenClaw skills must be self-contained. They should not require
 the vendored upstream files after sync; upstream paths and commits are kept as
 review/provenance metadata.
 
-OpenClaw compatibility should preserve the upstream workflow:
+OpenClaw compatibility should preserve the upstream workflow shape:
 
 ```text
 threat model -> static scan -> triage -> patch -> sandboxed pipeline/customize
@@ -68,10 +70,11 @@ PR #8 completed the initial correction:
 ## Remaining Work
 
 1. Wire the wrappers into the chosen live OpenClaw skills distribution path.
-2. Dogfood the OpenClaw-native skills on selected target repos.
+2. Dogfood the OpenClaw skill wrappers on selected target repos.
 3. Decide whether the earlier local threat-model/static-scan CLIs remain support
    commands, become fixtures, or are retired behind the skill workflows.
-4. Reopen tool-specific work only after each PR is anchored to an upstream skill
+4. Add upstream drift checks before making strong Anthropic-alignment claims.
+5. Reopen tool-specific work only after each PR is anchored to an upstream skill
    or command.
 
 ## Non-Goals

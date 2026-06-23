@@ -3,7 +3,7 @@ name: anthropic-vuln-scan
 description: Run an Anthropic-style static vulnerability scan in OpenClaw.
 ---
 
-# Anthropic Vulnerability Scan - OpenClaw Native Skill
+# Anthropic Vulnerability Scan - OpenClaw Skill Wrapper
 
 This skill adapts Anthropic's defending-code `vuln-scan` workflow for OpenClaw.
 It is self-contained for runtime use; upstream files are provenance only.

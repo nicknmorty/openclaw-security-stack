@@ -99,25 +99,36 @@ test('buildFindingsDoc assigns ids/lane, sorts by severity, counts', () => {
 test('end-to-end runtime-health run flows through the report core', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'rh-'));
   const emptySsh = path.join(tmp, 'ssh-empty');
+  const identityFile = path.join(tmp, 'identity-denylist.json');
+  const sentinelLabel = 'sentinel-private-host';
   fs.mkdirSync(emptySsh);
+  fs.writeFileSync(identityFile, `${JSON.stringify({ terms: [sentinelLabel] })}\n`, 'utf8');
   const node = process.execPath;
   const scan = path.join(repoRoot, 'scripts', 'security-runtime-health.mjs');
   const report = path.join(repoRoot, 'scripts', 'security-report.mjs');
   const outDir = path.join(tmp, 'rh-out');
 
-  execFileSync(node, [scan, '--label', 'test-host', '--ssh-dir', emptySsh, '--out-dir', outDir, '--quiet'], { cwd: repoRoot });
+  execFileSync(node, [scan, '--label', sentinelLabel, '--ssh-dir', emptySsh, '--out-dir', outDir, '--quiet'], { cwd: repoRoot });
   const doc = JSON.parse(fs.readFileSync(path.join(outDir, 'RUNTIME-HEALTH-FINDINGS.json'), 'utf8'));
   assert.equal(doc.schema_version, 'security-stack.findings.v1');
   assert.equal(doc.tool, 'security-runtime-health');
   assert.ok(Array.isArray(doc.summary.checks_run));
 
   const reportDir = path.join(tmp, 'report');
-  execFileSync(node, [report, '--findings', path.join(outDir, 'RUNTIME-HEALTH-FINDINGS.json'), '--out-dir', reportDir, '--quiet'], { cwd: repoRoot });
+  execFileSync(node, [
+    report,
+    '--findings', path.join(outDir, 'RUNTIME-HEALTH-FINDINGS.json'),
+    '--identity-file', identityFile,
+    '--out-dir', reportDir,
+    '--quiet',
+  ], { cwd: repoRoot });
   const rep = JSON.parse(fs.readFileSync(path.join(reportDir, 'REPORT.json'), 'utf8'));
   assert.equal(rep.source_tool, 'security-runtime-health');
-  // redaction proof: no home username in the report
+  // redaction proof: a configured private label is removed. Do not assert on
+  // the live username; root-runner hosts legitimately produce SSH root-login
+  // findings that include the word "root".
   const blob = fs.readFileSync(path.join(reportDir, 'REPORT.json'), 'utf8');
-  assert.ok(!blob.includes(os.userInfo().username) || os.userInfo().username.length < 3, 'no host username leak');
+  assert.ok(!blob.includes(sentinelLabel), 'configured identity term redacted');
 
   fs.rmSync(tmp, { recursive: true, force: true });
 });

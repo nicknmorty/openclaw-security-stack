@@ -18,6 +18,9 @@ testing, and automated remediation are explicitly out of scope for v1.
   `node scripts/security-scan.mjs`.
 - [x] Four read-only lanes are wired by default: threat-model, static-scan,
   supply-chain, runtime-health.
+- [x] Runtime-health is documented as host posture, not target-repo code
+  analysis, with a repo-only scanner selection shown for operators who want to
+  omit it.
 - [x] Reports are local-only and redacted by default.
 - [x] Findings use stable fingerprints and `new` / `persistent` / `resolved`
   state.
@@ -80,6 +83,10 @@ node scripts/security-scan.mjs \
 - Findings are review candidates, not proof of exploitability.
 - Supply-chain posture is deterministic and does not include advisory lookup.
 - Runtime-health is a portable baseline, not a full host hardening audit.
+- Runtime-health is host posture and should be interpreted separately from
+  target-repo findings.
+- Anthropic upstream drift is not automatically tracked; alignment claims need
+  explicit vendored-source review.
 - Scheduling/cron wiring is intentionally separate from this repo.
 - Wider distribution requires the normal public-release gate and maintainer
   approval.

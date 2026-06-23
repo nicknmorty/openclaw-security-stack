@@ -8,6 +8,16 @@ automated remediation.
 
 ## Unreleased
 
+### Changed
+
+- README and v1 release notes now frame the project as an Anthropic-inspired
+  OpenClaw local scanner stack plus staged workflow wrappers, not as a full
+  implementation of Anthropic's autonomous reference harness.
+- Runtime-health docs now call out that the lane is host posture, not
+  target-repo code analysis, and show how to run a repo-only scan without it.
+- Guard/remediation helpers are documented as separate operator tools outside
+  the normal scanner path.
+
 ### Fixed
 
 - Runtime-health listening-socket findings now include protocol/address/port in
@@ -16,6 +26,9 @@ automated remediation.
 - `security-report` now applies the same redaction pass to persisted
   `STATE.json` as it applies to `REPORT.md` and `REPORT.json`, preventing
   identity-denylist terms from lingering in local state metadata.
+- `test-security-runtime-health` no longer asserts that the live username is
+  absent from report output, avoiding false failures on root-runner hosts where
+  SSH root-login findings legitimately include the word "root".
 
 ## v1.0.0 - 2026-06-22
 

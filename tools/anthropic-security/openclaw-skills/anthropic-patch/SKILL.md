@@ -3,7 +3,7 @@ name: anthropic-patch
 description: Generate inert candidate fixes for verified security findings.
 ---
 
-# Anthropic Patch - OpenClaw Native Skill
+# Anthropic Patch - OpenClaw Skill Wrapper
 
 This skill adapts Anthropic's defending-code `patch` workflow for OpenClaw.
 It is self-contained for runtime use.

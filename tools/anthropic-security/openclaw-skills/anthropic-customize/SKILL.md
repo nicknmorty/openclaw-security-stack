@@ -3,7 +3,7 @@ name: anthropic-customize
 description: Plan and adapt the Anthropic defending-code harness for a target.
 ---
 
-# Anthropic Customize - OpenClaw Native Skill
+# Anthropic Customize - OpenClaw Skill Wrapper
 
 This skill adapts Anthropic's defending-code `customize` workflow for OpenClaw.
 It is self-contained for runtime use.

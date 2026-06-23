@@ -3,7 +3,7 @@ name: anthropic-triage
 description: Verify, dedupe, rank, and route security scanner findings.
 ---
 
-# Anthropic Triage - OpenClaw Native Skill
+# Anthropic Triage - OpenClaw Skill Wrapper
 
 This skill adapts Anthropic's defending-code `triage` workflow for OpenClaw.
 It is self-contained for runtime use.

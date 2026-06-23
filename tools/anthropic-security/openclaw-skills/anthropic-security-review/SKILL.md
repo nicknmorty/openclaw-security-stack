@@ -3,7 +3,7 @@ name: anthropic-security-review
 description: Perform Anthropic-style diff-aware security review in OpenClaw.
 ---
 
-# Anthropic Security Review - OpenClaw Native Skill
+# Anthropic Security Review - OpenClaw Skill Wrapper
 
 This skill adapts Anthropic's Claude Code `/security-review` command for
 OpenClaw. It is self-contained for runtime use.

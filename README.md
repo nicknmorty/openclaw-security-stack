@@ -1,6 +1,6 @@
 # OpenClaw Security Stack
 
-Status: public working v1, Anthropic security adapter merged
+Status: public working v1, Anthropic-inspired scanner stack and staged workflow wrappers
 Started: 2026-05-26
 Owner: OpenClaw security maintainers
 Collaborators: public contributors
@@ -12,9 +12,16 @@ This repo is the OpenClaw security tooling lane. Its job is to help operators
 review OpenClaw repos and runtime-adjacent code without leaking private data,
 silently changing security policy, or generating noisy unactionable reports.
 
-The current direction is to adapt Anthropic's published security skills and
-reference harness into native OpenClaw skills. We are not reinventing those
-workflows from scratch.
+The current public v1 has two related lanes:
+
+- a local OpenClaw scanner/reporting stack for deterministic candidate findings,
+  stateful reports, suppressions, and digests,
+- staged Anthropic-inspired OpenClaw workflow wrappers for threat modeling,
+  static vulnerability review, triage, inert patch drafting, and future harness
+  customization.
+
+It is not yet a full implementation of Anthropic's autonomous Python/Docker/gVisor
+defending-code reference harness.
 
 ## Quick Start
 
@@ -37,9 +44,13 @@ node scripts/security-scan.mjs --suppressions security-suppressions.json
 The orchestrator runs `threat-model -> static-scan -> supply-chain ->
 runtime-health`, turns each findings stream into a redacted report with `new` /
 `persistent` / `resolved` state, and writes `runs/summary/SUMMARY.md` +
-`SUMMARY.json` plus `runs/summary/DIGEST.txt`. All output is local-only and
-redacted by default. Lanes are portable/generic and avoid hardcoded host
-identity.
+`SUMMARY.json` plus `runs/summary/DIGEST.txt`. Findings are review candidates,
+not verified vulnerabilities. All output is local-only and redacted by default.
+Lanes are portable/generic and avoid hardcoded host identity.
+
+`runtime-health` is host posture, not target-repo code analysis. It runs by
+default in v1, so use `--scanners threat-model,static-scan,supply-chain` when
+you want a repo-only scan.
 
 Start with the operator runbook for real use:
 
@@ -56,11 +67,11 @@ git diff --check
 
 ## Current State
 
-Merged PR #8 replaced the scratch-built tool line with an Anthropic-aligned
-adapter:
+Merged PR #8 replaced the scratch-built workflow-wrapper line with an
+Anthropic-inspired adapter:
 
 - vendored Anthropic security skill/reference files for provenance and review,
-- self-contained OpenClaw-native skills derived from those workflows,
+- self-contained OpenClaw skill wrappers derived from those workflows,
 - an adapter manifest mapping upstream skills to OpenClaw lanes,
 - an explicit-destination sync script for preview/install copies,
 - tests that verify required upstream files, wrapper safety language, manifest
@@ -107,8 +118,9 @@ OpenClaw-specific constraints:
 - `scripts/security-report.mjs` and `scripts/security-digest.mjs` - redacted
   stateful reports and low-noise digest rendering.
 - `scripts/security-secret-guard.sh`, `scripts/oauth-containment-audit.sh`, and
-  `scripts/redact-sensitive-output.sh` - sanitized local guard helpers for
-  secret-boundary checks, OAuth/token containment, and redacted diagnostics.
+  `scripts/redact-sensitive-output.sh` - separate local guard/remediation
+  helpers for secret-boundary checks, OAuth/token containment, and redacted
+  diagnostics. They are not part of the normal scanner path.
   See [Security guard scripts](docs/SECURITY_GUARD_SCRIPTS.md) for the exact
   files they can create, delete, strip, or chmod and why those actions reduce
   credential exposure.

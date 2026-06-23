@@ -1,12 +1,13 @@
 # Anthropic Security Upstream Adapter
 
-This directory is the source-aligned OpenClaw compatibility lane for
-Anthropic's security tooling.
+This directory is the source-referenced OpenClaw compatibility lane for
+Anthropic's security workflows.
 
-The goal is not to replace Anthropic's implementation. The goal is to adapt
-the upstream skills and reference harness so OpenClaw can run the same security
-workflow with local-first reporting, scoped writes, redaction, and explicit
-operator approval boundaries.
+The goal is not to replace Anthropic's implementation or claim parity with the
+autonomous Python/Docker/gVisor reference harness. The current goal is to adapt
+the upstream skills into OpenClaw workflow wrappers, preserve provenance, and
+connect those workflows to local-first reporting, scoped writes, redaction, and
+explicit operator approval boundaries.
 
 ## Upstream Sources
 
@@ -33,7 +34,8 @@ Anthropic's defending-code repo provides the source workflow:
 - `_lib/checkpoint.py`
 
 The OpenClaw project should adapt these contracts, prompts, schemas, and safety
-rules rather than reimplementing the workflow from scratch.
+rules rather than inventing unrelated workflows. Upstream drift must be checked
+explicitly before making strong alignment claims.
 
 ## OpenClaw Compatibility Work
 
@@ -47,16 +49,20 @@ Compatibility work should focus on:
 - producing local report artifacts suitable for OpenClaw scheduling and
   chat summaries without leaking private evidence.
 
+The deterministic JavaScript scanner CLIs in this repo are local OpenClaw
+support tooling. They are useful, but they are separate from Anthropic's
+autonomous vulnerability-discovery loop.
+
 ## OpenClaw Skill Wrappers
 
 The installable OpenClaw-facing wrappers live under:
 
 `tools/anthropic-security/openclaw-skills/`
 
-They are self-contained OpenClaw skills derived from Anthropic's workflow. The
-vendored upstream files remain in this repo for provenance and review, not as
-runtime files required by synced skills. To copy the wrappers into a skills
-directory for review:
+They are self-contained OpenClaw skill wrappers inspired by Anthropic's
+workflow. The vendored upstream files remain in this repo for provenance and
+review, not as runtime files required by synced skills. To copy the wrappers
+into a skills directory for review:
 
 ```bash
 node scripts/sync-openclaw-security-skills.mjs \

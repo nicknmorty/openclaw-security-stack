@@ -3,7 +3,7 @@ name: anthropic-threat-model
 description: Build an Anthropic-style threat model for an OpenClaw target.
 ---
 
-# Anthropic Threat Model - OpenClaw Native Skill
+# Anthropic Threat Model - OpenClaw Skill Wrapper
 
 This skill adapts Anthropic's defending-code `threat-model` workflow for
 OpenClaw. It is self-contained for runtime use; upstream repo paths are

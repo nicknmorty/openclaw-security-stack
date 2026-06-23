@@ -3,6 +3,10 @@
 Read-only host posture checks emitted as `security-stack.findings.v1` so they
 flow through the report core and the orchestrator.
 
+This lane is host posture, not target-repo code analysis. It is useful when the
+operator wants runtime-adjacent exposure context, but it should be interpreted
+separately from repo findings.
+
 ## Checks (all best-effort, skipped gracefully if unavailable)
 
 | Check | Finding | Severity |
@@ -38,16 +42,23 @@ node scripts/security-runtime-health.mjs --label my-host --sensitive /path/to/.e
 node scripts/security-report.mjs --findings runs/runtime-health/my-host/RUNTIME-HEALTH-FINDINGS.json
 ```
 
-It also runs as a lane inside `scripts/security-scan.mjs`. Note: runtime-health
-is host-level, so in a multi-target scan it reports the same host posture under
-each target label.
+It also runs by default as a lane inside `scripts/security-scan.mjs`. Note:
+runtime-health is host-level, so in a multi-target scan it reports the same
+host posture under each target label. For a repo-only scan, omit it explicitly:
+
+```bash
+node scripts/security-scan.mjs \
+  --target /path/to/repo \
+  --label my-repo \
+  --scanners threat-model,static-scan,supply-chain
+```
 
 ## Note on noise
 
 Many hosts legitimately bind services to all interfaces, so `listening-non-loopback`
 can be chatty on a first run. The report core marks repeat findings `persistent`,
-so reviewers can focus on `new` exposures. An explicit acknowledge/ignore
-workflow is tracked in the backlog.
+so reviewers can focus on `new` exposures. Use `security-suppressions.json` to
+acknowledge accepted host posture intentionally and keep the digest low-noise.
 
 ## Tests
 
