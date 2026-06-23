@@ -6,6 +6,14 @@ This project uses pragmatic release notes rather than a strict package-manager
 versioning contract for now. Scanner findings are review candidates, not
 automated remediation.
 
+## Unreleased
+
+### Fixed
+
+- Runtime-health listening-socket findings now include protocol/address/port in
+  their scanner-owned fingerprint identity, so exact per-port suppressions and
+  state tracking do not collapse unrelated sockets into the same finding.
+
 ## v1.0.0 - 2026-06-22
 
 Working public v1 of the local-first scanner stack.

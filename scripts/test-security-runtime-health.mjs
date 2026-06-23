@@ -13,6 +13,7 @@ import {
   analyzeListeningSockets, analyzeSshConfig, analyzeKeyPerms,
   analyzeSensitiveFiles, analyzeFirewall, buildFindingsDoc,
 } from './security-runtime-health.mjs';
+import { fingerprintFinding } from './lib/finding-state.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..');
@@ -31,6 +32,24 @@ test('analyzeListeningSockets flags non-loopback only and dedupes', () => {
   const f = analyzeListeningSockets(ss);
   assert.equal(f.length, 2, 'only :80 and :443 exposed (dedup, loopback excluded)');
   assert.ok(f.every((x) => x.category === 'listening-non-loopback' && x.severity === 'MEDIUM'));
+});
+
+test('listening socket fingerprints include protocol/address/port identity', () => {
+  const ss = [
+    'tcp   LISTEN 0 511   0.0.0.0:22       0.0.0.0:*',
+    'tcp   LISTEN 0 511   0.0.0.0:443      0.0.0.0:*',
+    'udp   UNCONN 0 0      0.0.0.0:443      0.0.0.0:*',
+  ].join('\n');
+  const f = analyzeListeningSockets(ss).map((finding) => ({
+    lane: 'runtime-health',
+    ...finding,
+  }));
+  assert.equal(f.length, 3);
+  assert.deepEqual(
+    f.map((x) => x.fingerprint_key).sort(),
+    ['tcp:0.0.0.0:22', 'tcp:0.0.0.0:443', 'udp:0.0.0.0:443'],
+  );
+  assert.equal(new Set(f.map((x) => fingerprintFinding(x))).size, 3);
 });
 
 test('analyzeSshConfig flags root login + password auth, ignores comments', () => {

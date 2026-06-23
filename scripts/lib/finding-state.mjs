@@ -25,6 +25,9 @@ function norm(v) {
  * Stable fingerprint for a finding. Intentionally excludes volatile fields
  * (array index ids like F-001, line numbers, timestamps, confidence) so the
  * same underlying issue keeps one identity across runs even as the file drifts.
+ * Scanners may provide `fingerprint_key` for stable, scanner-owned identity
+ * details that are semantically part of the issue, such as a socket's
+ * protocol/address/port.
  */
 export function fingerprintFinding(finding = {}) {
   const parts = [
@@ -32,6 +35,7 @@ export function fingerprintFinding(finding = {}) {
     norm(finding.category ?? finding.rule),
     norm(finding.file ?? finding.path),
     norm(finding.title ?? finding.message),
+    norm(finding.fingerprint_key),
   ];
   const hash = crypto.createHash('sha256').update(parts.join('\u0000')).digest('hex');
   return `f-${hash.slice(0, 16)}`;
@@ -95,6 +99,7 @@ export function diffFindings(currentFindings = [], priorState = emptyState(), op
       category: finding.category ?? finding.rule ?? null,
       title: finding.title ?? finding.message ?? null,
       file: finding.file ?? finding.path ?? null,
+      fingerprint_key: finding.fingerprint_key ?? null,
       severity: finding.severity ?? null,
       status: 'persistent', // anything carried forward is persistent next run
       first_seen: firstSeen,

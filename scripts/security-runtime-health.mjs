@@ -52,6 +52,7 @@ export function analyzeListeningSockets(ssText) {
       title: isUnspecified
         ? 'Service listening on all interfaces'
         : 'Service listening on a non-loopback address',
+      fingerprint_key: key,
       severity: 'MEDIUM',
       confidence: 0.6,
       surface: 'Network exposure',
