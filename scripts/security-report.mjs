@@ -187,9 +187,11 @@ function main() {
   const { active, acknowledged } = applySuppressions(diff.findings, supp.suppressions, now);
 
   let report = buildReport(findingsDoc, { findings: active, acknowledged, resolved: diff.resolved }, { label: args.label, now });
+  let nextState = diff.nextState;
   if (args.redact) {
     const redactor = makeRedactor({ identityFile: args.identityFile });
     report = redactor.value(report);
+    nextState = redactor.value(nextState);
   }
 
   fs.mkdirSync(outDir, { recursive: true });
@@ -197,7 +199,7 @@ function main() {
   const mdPath = path.join(outDir, 'REPORT.md');
   fs.writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8');
   fs.writeFileSync(mdPath, renderMarkdown(report), 'utf8');
-  writeState(statePath, diff.nextState);
+  writeState(statePath, nextState);
 
   if (!args.quiet) {
     const c = report.counts;

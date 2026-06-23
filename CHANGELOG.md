@@ -13,6 +13,9 @@ automated remediation.
 - Runtime-health listening-socket findings now include protocol/address/port in
   their scanner-owned fingerprint identity, so exact per-port suppressions and
   state tracking do not collapse unrelated sockets into the same finding.
+- `security-report` now applies the same redaction pass to persisted
+  `STATE.json` as it applies to `REPORT.md` and `REPORT.json`, preventing
+  identity-denylist terms from lingering in local state metadata.
 
 ## v1.0.0 - 2026-06-22
 

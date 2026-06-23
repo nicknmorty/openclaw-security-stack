@@ -175,6 +175,41 @@ test('CLI produces redacted report and round-trips state', () => {
   fs.rmSync(tmp, { recursive: true, force: true });
 });
 
+test('CLI redacts persisted state with the same identity denylist as reports', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'secrep-id-'));
+  const cli = path.join(repoRoot, 'scripts', 'security-report.mjs');
+  const findingsPath = path.join(tmp, 'findings.json');
+  const identityPath = path.join(tmp, 'identity.json');
+  const term = 'ProjectNebulaX';
+  fs.writeFileSync(findingsPath, JSON.stringify({
+    schema_version: 'security-stack.findings.v1',
+    tool: 'identity-fixture',
+    summary: { target_label: `${term} target`, target_basename: 'identity-fixture' },
+    findings: [{
+      lane: 'agent-safety',
+      category: 'identity-redaction',
+      title: `${term} appears in evidence`,
+      severity: 'MEDIUM',
+      confidence: 0.9,
+      file: 'notes.md',
+      evidence: `${term} should be hidden`,
+    }],
+  }));
+  fs.writeFileSync(identityPath, JSON.stringify({ terms: [term] }));
+
+  execFileSync(process.execPath, [cli, '--findings', findingsPath, '--out-dir', tmp, '--identity-file', identityPath, '--quiet'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+  });
+
+  const combined = fs.readFileSync(path.join(tmp, 'REPORT.json'), 'utf8')
+    + fs.readFileSync(path.join(tmp, 'REPORT.md'), 'utf8')
+    + fs.readFileSync(path.join(tmp, 'STATE.json'), 'utf8');
+  assert.ok(!combined.includes(term), 'identity term must be absent from report and state outputs');
+  assert.ok(combined.includes('[REDACTED]'), 'redaction marker should be present');
+  fs.rmSync(tmp, { recursive: true, force: true });
+});
+
 test('different source tools do not cross-resolve under default out-dir', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'secrep-ns-'));
   const cli = path.join(repoRoot, 'scripts', 'security-report.mjs');
